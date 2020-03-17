@@ -1,4 +1,4 @@
-class destinationsController < ApplicationController
+class DestinationsController < ApplicationController
     before '/destinations/*' do
       if !is_logged_in?
         flash[:login] = "You need to be logged in for that!"
@@ -21,10 +21,6 @@ class destinationsController < ApplicationController
       erb :"destinations/destinations_from_user"
     end
   
-    get '/destinations/new' do
-      @categories = Category.all
-      erb :"destinations/create"
-    end
   
     post '/destinations' do
       details = {
