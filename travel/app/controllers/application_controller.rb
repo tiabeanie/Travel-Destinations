@@ -1,15 +1,25 @@
-class ApplicationController < Sinatra::Base
-  enable :sessions
-  register Sinatra::ActiveRecordExtension
-  register Sinatra::Flash
-  set :views, Proc.new { File.join(root, "../views/") }
+require './config/environment'
 
-  get '/' do
+class ApplicationController < Sinatra::Base
+
+  configure do
+    set :views, 'app/views'
+    enable :sessions
+  end
+
+
+  get '/' do 
     erb :index
   end
 
   helpers do
-    def is_logged_in?
+    def redirect_if_not_logged_in
+      if !logged_in?
+        redirect "/login?error=You have to be logged in for that"
+      end
+    end
+
+    def logged_in?
       !!session[:user_id]
     end
 
@@ -17,14 +27,6 @@ class ApplicationController < Sinatra::Base
       User.find(session[:user_id])
     end
 
-    def is_empty?(user_hash, route)
-      user_hash.each do |att, val|
-        if val.empty?
-          flash[:empty] = "Please complete all fields."
-          redirect to "/#{route}"
-        end
-      end
-    end
   end
 
 end
