@@ -1,5 +1,5 @@
 class AddCountryIdToDestinations < ActiveRecord::Migration
     def change
-      add_column :countries, :country_id, :integer
+      add_column :destinations, :country_id, :integer
     end
   end
