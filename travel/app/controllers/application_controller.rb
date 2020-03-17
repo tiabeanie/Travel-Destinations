@@ -1,25 +1,20 @@
-require './config/environment'
-
 class ApplicationController < Sinatra::Base
+  enable :sessions
+  register Sinatra::ActiveRecordExtension
+  register Sinatra::Flash
+  set :session_secret, "my_application_secret"
+  set :views, Proc.new { File.join(root, "../views/") }
+  set :public_folder, "public"
 
-  configure do
-    set :views, 'app/views'
-    enable :sessions
-  end
-
-
-  get '/' do 
-    erb :index 
+  get '/' do
+    if is_logged_in?
+      redirect to '/experiences'
+    end
+    erb :index
   end
 
   helpers do
-    def redirect_if_not_logged_in
-      if !logged_in?
-        redirect "/login?error=You have to be logged in for that"
-      end
-    end
-
-    def logged_in?
+    def is_logged_in?
       !!session[:user_id]
     end
 
@@ -27,6 +22,14 @@ class ApplicationController < Sinatra::Base
       User.find(session[:user_id])
     end
 
+    def is_empty?(user_hash, route)
+      user_hash.each do |att, val|
+        if val.empty?
+          flash[:empty] = "Please complete all fields."
+          redirect to "/#{route}"
+        end
+      end
+    end
   end
 
 end
