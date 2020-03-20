@@ -1,0 +1,8 @@
+<h1>Edit <%= @country.name %></h1>
+
+<form action="/countries/<%=@country.id %>" method="POST">
+  <label> Country </label>
+  <input type="text" name="name" value="<%=@country.name %>"> </br>
+
+  <input type="submit" value="Update">
+</form>

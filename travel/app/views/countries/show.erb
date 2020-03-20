@@ -1,11 +1,12 @@
-<h1 class="display-3">All Destinations in <%= @country.name %></h1>
-<div class="row">
-  <% @country.experiences.each do |exp| %>
-    <div class="card" style="width: 15rem; margin: 20px">
-      <div class="text-center">
-        <div class="card-header"><a href="/experiences/<%= exp.id %>"><%= exp.description %></a></div>
-      </div>
-    </div>
-  <% end %>
-</div>
-<div class="text-right"><a class="btn btn-info" style="margin: 20px" href="/countries" role="button">< Back to All Countries</a></div>
+  <%= @country.name %><br />
+  <%= @country.capacity %> <br />
+
+  <h2>Destinations</h2>
+  <ul>
+  <% @country.destinations.each do |destination| %>
+    <li><a href="/destinations/<%=destination.id%>"><%= destination.name %></a></li>
+  <% end%>
+  </ul>
+  <a href="/countries/<%=@country.id%>/edit">Edit</a>
+  <br />
+  <br />

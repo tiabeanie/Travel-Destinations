@@ -1,0 +1,7 @@
+<% @destinations.each do |destination| %>
+  <%= destination.name %><br />
+  <%= destination.description %> <br />
+  <a href="/destinations/<%=destination.id%>/edit">Edit</a>
+  <br />
+  <br />
+<% end %>
