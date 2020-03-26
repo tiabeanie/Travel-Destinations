@@ -9,19 +9,15 @@ class ApplicationController < Sinatra::Base
     set :sesion_secret, 'lovetotravel'
   end
 
-
-  get '/' do 
+  get '/' do
+    if is_logged_in?
+      redirect to '/experiences'
+    end
     erb :index
   end
 
   helpers do
-    def redirect_if_not_logged_in
-      if !logged_in?
-        redirect "/login?error=You have to be logged in for that"
-      end
-    end
-
-    def logged_in?
+    def is_logged_in?
       !!session[:user_id]
     end
 
