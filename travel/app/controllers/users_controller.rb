@@ -1,62 +1,62 @@
-class UsersController < ApplicationController
-  get '/signup' do
-    redirect to '/destinations' if is_logged_in?
+class UsersController < ApplicationController 
 
-    erb :"users/signup"
-  end
-
-  post '/signup' do
-    user_info = { :username => params["name"],
-                  :email => params["email"],
-                  :password => params["password"] }
-
-
-    if User.find_by(:email => user_info[:email])
-      flash[:account_taken] = "The email you provided is already in our system. Please enter a new email or log in to continue."
-      redirect to '/signup'
+  get '/users/:id' do
+    if !logged_in?
+      redirect '/destinations'
     end
 
-    new_user = User.create(user_info)
-    session[:user_id] = new_user.id
-
-    redirect to '/destinations'
+    @user = User.find(params[:id])
+    if !@user.nil? && @user == current_user
+      erb :'users/show'
+    else
+      redirect '/destinations'
+    end
   end
 
-  get '/login' do
-    redirect to '/destinations' if is_logged_in?
+  get '/signup' do
+    if !session[:user_id]
+      erb :'users/new'
+    else
+      redirect to '/destinations'
+    end
+  end
 
-    erb :"users/login"
+  post '/signup' do 
+    if params[:email] == "" || params[:password] == ""
+      redirect to '/signup'
+    else
+      @user = User.create(:name => params[:name], :email => params[:email] :password => params[:password])
+      session[:user_id] = @user.id
+      redirect '/destinations'
+    end
+  end
+
+  get '/login' do 
+    @error_message = params[:error]
+    if !session[:user_id]
+      erb :'users/login'
+    else
+      redirect '/destinations'
+    end
   end
 
   post '/login' do
-    user_info = {
-      :email => params["email"],
-      :password => params["password"]
-    }
-
-
-    user = User.find_by(:email => user_info[:email])
-
-    if user && user.authenticate(user_info[:password])
+    user = User.find_by(:email => params[:email])
+    if user && user.authenticate(params[:password])
       session[:user_id] = user.id
-      redirect to '/destinations'
+      redirect "/destinations"
     else
-      if user
-        flash[:password] = "Your password is incorrect"
-        redirect to '/login'
-      else
-        flash[:no_account] = "There is no account associated with that email address. Please enter a different email or sign up for an account."
-        redirect to '/login'
-      end
+      redirect to '/signup'
     end
   end
 
   get '/logout' do
-    if is_logged_in?
-      session.clear
+    if session[:user_id] != nil
+      session.destroy
       redirect to '/login'
     else
       redirect to '/'
     end
   end
+
 end

@@ -1,48 +1,45 @@
-class DestinationsController < ApplicationController 
+class DestinationsController < ApplicationController
   get "/destinations" do
-    if is_logged_in?
-      @destination = Destination.all
-      erb :'destinations/index'
-    end
+    redirect_if_not_logged_in 
+    @destinations = Destination.all
+    erb :'destinations/index'
   end
 
   get "/destinations/new" do
-    if !is_logged_in? 
-      @error_message = params[:error]
-      erb :'destinations/new'
-    end
+    redirect_if_not_logged_in 
+    @error_message = params[:error]
+    erb :'destinations/new'
   end
 
   get "/destinations/:id/edit" do
-    if !is_logged_in?
-      @error_message = params[:error]
-      @destination = Destination.find(params[:id])
-      erb :'destinations/edit'
-    end
+    redirect_if_not_logged_in 
+    @error_message = params[:error]
+    @destination = Destination.find(params[:id])
+    erb :'destinations/edit'
   end
 
   post "/destinations/:id" do
-    if !is_logged_in?
-      @destination = Destination.find(params[:id])
+    redirect_if_not_logged_in 
+    @destination = Destination.find(params[:id])
     unless Destination.valid_params?(params)
       redirect "/destinations/#{@destination.id}/edit?error=invalid destination"
     end
-      @destination.update(params.select{|k|k=="name" || k=="country_id"})
-      redirect "/destinations/#{@destination.id}"
+    @destination.update(params.select{|k|k=="name" || k=="description"})
+    redirect "/destinations/#{@destination.id}"
   end
 
   get "/destinations/:id" do
-    if !is_logged_in?
-      @destination = Destination.find(params[:id])
-      erb :'destinations/show'
-    end
+    redirect_if_not_logged_in 
+    @destination = Destination.find(params[:id])
+    erb :'destinations/show'
   end
 
   post "/destinations" do
-    if !is_logged_in?
+    redirect_if_not_logged_in 
     unless Destination.valid_params?(params)
       redirect "/destinations/new?error=invalid destination"
     end
     Destination.create(params)
     redirect "/destinations"
-  end 
+  end
+end
