@@ -1,28 +1,21 @@
 class DestinationsController < ApplicationController
 
-    get '/destinations' do 
-        if logged_in?
-            @destinations = destination.all
-            erb :'/destinations/index'
-        end
+    get '/destinations' do
+         @destinations = Destination.all
+         erb :'/destinations/index'
     end
 
     get '/destinations/create' do
-        if logged_in?
-          erb :'/destinations/create'
-        end
+        erb :'/destinations/create'
     end
 
     get '/destinations/:id/edit' do 
-        if logged_in?
-            @destination = Destination.find(params[:id])
-            erb :'/destinations/edit'
-        end
+        @destination = Destination.find_by_id(params[:id])
+        erb :'/destinations/edit'
     end
 
     post "/destinations/:id" do
-        if logged_in?
-            @destination = Destination.find(params[:id])
+            @destination = Destination.find_by_id(params[:id])
         unless Destination.valid_params?(params)
             redirect "/destinations/#{@destination.id}/edit?error=invalid destination"
         end
@@ -31,18 +24,15 @@ class DestinationsController < ApplicationController
     end
 
     get '/destinations/:id' do
-        if logged_in?
-            @destination = Destination.find(params[:id])
-            erb :'/destinations/show'
-        end
+        @destination = Destination.find_by_id(params[:id])
+        erb :'/destinations/show'
     end
 
     post '/destinations' do
-        if logged_in?
         unless Destination.valid_params?(params)
-            redirect "/destinations/new?error=invalid destination"
+            redirect "/destinations/create?error=invalid destination"
         end 
         Destination.create(params)
-        redirect "/destinations"       
-    end
+        redirect "/destinations" 
+    end      
 end

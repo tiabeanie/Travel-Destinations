@@ -1,9 +1,11 @@
 class UsersController < ApplicationController
 
   get '/users/:id' do
-    @user = User.find(params[:id])
-    if !@user.nil? && @user == current_user
+    @user = User.find_by_id(params[:id])
+    if logged_in? && @user == current_user
       erb :'/users/show'
+    else
+      redirect to '/login'
     end
   end 
 

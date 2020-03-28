@@ -8,11 +8,7 @@
   <input type="text" name="Description"> </br>
 
   <label> Destination Country </label>
-  <select name="country_id">
-    <% current_user.countries.each do |country| %>
-      <option value=<%=country.id %>><%= country.name %></option>
-    <% end %>
-  </select>
+  <input type="text" name="Country"> </br>
 
   <input type="submit" value="Create">
 </form>
