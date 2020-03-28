@@ -1,62 +1,47 @@
-class UsersController < ApplicationController 
+class UsersController < ApplicationController
+  register Sinatra::Flash
+  require 'sinatra/flash'
+  enable :sessions
 
-  get '/users/:id' do
-    if !logged_in?
-      redirect '/destinations'
-    end
+  get '/signup' do 
+      !logged_in? ? (erb :'/users/signup') : (redirect "/")
+  end 
 
-    @user = User.find(params[:id])
-    if !@user.nil? && @user == current_user
-      erb :'users/show'
-    else
-      redirect '/destinations'
-    end
+  post '/signup' do
+      user = User.create(:username => params[:username], :email => params[:email], :password => params[:password])
+      if user.save 
+          (session[:user_id] = user.id)
+          (redirect "/destinations") 
+      else
+          flash[:error] = "Something went wrong. Please try again!"
+          redirect "/signup"
+      end
   end
 
-  get '/signup' do
-    if !session[:user_id]
-      erb :'users/new'
-    else
-      redirect to '/destinations'
-    end
+  get '/login' do
+      user = User.find_by(:username => params[:username])
+      !logged_in? ? (erb :'/users/login') : (redirect "/destinations")
   end
 
-  post '/signup' do 
-    if params[:email] == "" || params[:password] == ""
-      redirect to '/signup'
-    else
-      @user = User.create(:name => params[:name], :email => params[:email] :password => params[:password])
-      session[:user_id] = @user.id
-      redirect '/destinations'
-    end
+  post "/login" do
+      user = User.find_by(:username => params[:username])
+      if user && user.authenticate(params[:password])
+          session[:user_id] = user.id
+          redirect "/destinations"
+      else
+          flash[:error] = "Incorrect username or password. Please try again!"
+          redirect "/login"
+      end
   end
 
-  get '/login' do 
-    @error_message = params[:error]
-    if !session[:user_id]
-      erb :'users/login'
-    else
-      redirect '/destinations'
-    end
-  end
-
-  post '/login' do
-    user = User.find_by(:email => params[:email])
-    if user && user.authenticate(params[:password])
-      session[:user_id] = user.id
-      redirect "/destinations"
-    else
-      redirect to '/signup'
-    end
-  end
-
-  get '/logout' do
-    if session[:user_id] != nil
-      session.destroy
-      redirect to '/login'
-    else
-      redirect to '/'
-    end
+  get "/logout" do
+      if logged_in? 
+          session.destroy
+          redirect '/login' 
+      else
+          flash[:error] = "Something went wrong. Please try again!"
+          redirect "/"
+      end
   end
 
 end
