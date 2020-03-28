@@ -4,10 +4,10 @@
   <label> Destination Name </label>
   <input type="text" name="name"> </br>
 
-  <label> Destination Description </label>
-  <input type="text" name="description"> </br>
+  <label> Destination Desctiption </label>
+  <input type="text" name="Description"> </br>
 
-  <label> What Country is this in? </label>
+  <label> Destination Country </label>
   <select name="country_id">
     <% current_user.countries.each do |country| %>
       <option value=<%=country.id %>><%= country.name %></option>

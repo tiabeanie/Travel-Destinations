@@ -1,24 +1,15 @@
 class UsersController < ApplicationController
-  register Sinatra::Flash
-  require 'sinatra/flash'
-  enable :sessions
 
   get '/users/:id' do
-    if !logged_in?
-        redirect '/destinations'
-    end 
-
     @user = User.find(params[:id])
     if !@user.nil? && @user == current_user
-        erb :'users/show'
-    else
-        redirect '/destinations'
-    end 
-end 
+      erb :'/users/show'
+    end
+  end 
 
   get '/signup' do
     if !session[:user_id]
-      erb :'users/signup'
+      erb :'/users/signup'
     else
       redirect to '/destinations'
     end
@@ -30,7 +21,7 @@ end
     else
       @user = User.create(:username => params[:username], :email => params[:email], :password => params[:password])
       session[:user_id] = @user.id
-      redirect '/destinations'
+      redirect "/users/#{@user.id}"
     end
   end
 

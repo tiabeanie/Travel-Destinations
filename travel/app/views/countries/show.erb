@@ -1,12 +1,11 @@
   <%= @country.name %><br />
-  <%= @country.capacity %> <br />
+  <%= @country.continent %> <br />
 
-  <h2>Destinations</h2>
+  <h2>Countries</h2>
   <ul>
   <% @country.destinations.each do |destination| %>
     <li><a href="/destinations/<%=destination.id%>"><%= destination.name %></a></li>
   <% end%>
   </ul>
-  <a href="/countries/<%=@country.id%>/edit">Edit</a>
   <br />
   <br />
