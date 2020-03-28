@@ -3,45 +3,62 @@ class UsersController < ApplicationController
   require 'sinatra/flash'
   enable :sessions
 
-  get '/signup' do 
-      !logged_in? ? (erb :'/users/signup') : (redirect "/")
-  end 
+  get '/users/:id' do
+    if !logged_in?
+        redirect '/destinations'
+    end 
 
-  post '/signup' do
-      user = User.create(:username => params[:username], :email => params[:email], :password => params[:password])
-      if user.save 
-          (session[:user_id] = user.id)
-          (redirect "/destinations") 
-      else
-          flash[:error] = "Something went wrong. Please try again!"
-          redirect "/signup"
-      end
+    @user = User.find(params[:id])
+    if !@user.nil? && @user == current_user
+        erb :'users/show'
+    else
+        redirect '/destinations'
+    end 
+end 
+
+  get '/signup' do
+    if !session[:user_id]
+      erb :'users/signup'
+    else
+      redirect to '/destinations'
+    end
   end
 
-  get '/login' do
-      user = User.find_by(:username => params[:username])
-      !logged_in? ? (erb :'/users/login') : (redirect "/destinations")
+  post '/signup' do 
+    if params[:username] == "" || params[:email] == "" || params[:password] == ""
+      redirect to '/signup'
+    else
+      @user = User.create(:username => params[:username], :email => params[:email], :password => params[:password])
+      session[:user_id] = @user.id
+      redirect '/destinations'
+    end
+  end
+
+  get '/login' do 
+    @error_message = params[:error]
+    if !session[:user_id]
+      erb :'users/login'
+    else
+      redirect '/destinations'
+    end
   end
 
   post "/login" do
-      user = User.find_by(:username => params[:username])
+      user = User.find_by(:email => params[:email])
       if user && user.authenticate(params[:password])
           session[:user_id] = user.id
           redirect "/destinations"
       else
-          flash[:error] = "Incorrect username or password. Please try again!"
-          redirect "/login"
+          redirect to '/signup'
       end
   end
 
   get "/logout" do
-      if logged_in? 
+      if session[:user_id] != nil
           session.destroy
           redirect '/login' 
       else
-          flash[:error] = "Something went wrong. Please try again!"
-          redirect "/"
+          redirect to "/"
       end
   end
-
 end

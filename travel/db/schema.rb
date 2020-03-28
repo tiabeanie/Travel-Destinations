@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20200326212242) do
   create_table "destinations", force: :cascade do |t|
     t.string  "name"
     t.string  "description"
-    t.integer "user_id"
+    t.integer "email"
   end
 
   create_table "users", force: :cascade do |t|
