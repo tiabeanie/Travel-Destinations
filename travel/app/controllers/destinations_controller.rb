@@ -2,16 +2,16 @@ class DestinationsController < ApplicationController
 
     get '/destinations' do
          @destinations = Destination.all
-         erb :'/destinations/index'
+         erb :'destinations/index'
     end
 
     get '/destinations/create' do
-        erb :'/destinations/create'
+        erb :'destinations/create'
     end
 
     get '/destinations/:id/edit' do 
         @destination = Destination.find_by_id(params[:id])
-        erb :'/destinations/edit'
+        erb :'destinations/edit'
     end
 
     post "/destinations/:id" do
@@ -25,7 +25,7 @@ class DestinationsController < ApplicationController
 
     get '/destinations/:id' do
         @destination = Destination.find_by_id(params[:id])
-        erb :'/destinations/show'
+        erb :'destinations/show'
     end
 
     post '/destinations' do
