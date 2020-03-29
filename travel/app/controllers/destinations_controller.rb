@@ -1,38 +1,60 @@
 class DestinationsController < ApplicationController
 
     get '/destinations' do
-         @destinations = Destination.all
-         erb :'destinations/index'
-    end
-
-    get '/destinations/create' do
-        erb :'destinations/create'
-    end
-
-    get '/destinations/:id/edit' do 
-        @destination = Destination.find_by_id(params[:id])
-        erb :'destinations/edit'
-    end
-
-    post "/destinations/:id" do
-            @destination = Destination.find_by_id(params[:id])
-        unless Destination.valid_params?(params)
-            redirect "/destinations/#{@destination.id}/edit?error=invalid destination"
+        if logged_in?
+            @user = current_user
+            erb :"destinations/index"
         end
-        @destination.update(params.select{|k|k=="name" || k=="description" || k=="country_id"})
-        redirect "/destinations/#{@destination.id}"
     end
-
-    get '/destinations/:id' do
-        @destination = Destination.find_by_id(params[:id])
-        erb :'destinations/show'
+    
+    get '/destinations/new' do
+        erb :"destinations/create"
     end
-
+    
     post '/destinations' do
-        unless Destination.valid_params?(params)
-            redirect "/destinations/create?error=invalid destination"
-        end 
-        Destination.create(params)
-        redirect "/destinations" 
-    end      
+        details = {
+            :description => @params["description"],
+            :country => @params["country"]
+        }
+        @destination = Destination.create_new_destination(details, session[:user_id])
+        redirect to "destinations/#{@destination.id}"
+    end
+    
+    get '/destinations/:id/edit' do
+        @user = current_user
+        @destination = Destination.find(params["id"])
+        if @user.id != @destination.user_id
+            redirect to "/destinations/#{@destination.id}"
+        end
+        erb :"destinations/edit"
+    end
+    
+    patch '/destinations/:id' do
+        destination = Destination.find(params[:id])
+    
+        details = {
+            :description => params["description"],
+            :country => params["country"]
+        }
+    
+        destination = destination.update_destination(details, destination)
+        redirect to "destinations/#{destination.id}"    
+    end
+    
+    delete '/destinations/:id/delete' do
+        @user = current_user
+        @destination = Destination.find(params[:id])
+        if @user.id != @destination.user_id
+            redirect to '/destinations/#{@destination.id}'
+        else
+            @destination.destroy
+            redirect to '/destinations'
+        end
+    end
+    
+    get '/destinations/:id' do
+        @user = current_user
+        @destination = destination.find(params["id"])
+        erb :"destinations/show"
+    end
 end

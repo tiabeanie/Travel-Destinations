@@ -1,7 +1,25 @@
-<% @destinations.each do |destination| %>
-  <%= destination.name %><br />
-  <%= destination.description %> <br />
-  <a href="/destinations/<%=destination.id%>/edit">Edit</a>
-  <br />
-  <br />
-<% end %>
+<h1><%= @user.name %>'s Travel Destination Tracker</h1>
+<br>
+<% if @user.destinations.empty? %>
+  <div class="text-center"><p>You don't have anything in your Tracker!</p>
+  <p><a class="btn btn-success" style="margin: 20px" href="/destinations/new" role="button">Add a New Experience</a>
+  or
+  <a class="btn btn-warning" style="margin: 20px" href="/destinations/users" role="button">Get Inspiration from Others</a></p></div>
+<% else %>
+<div class="row">
+  <a class="btn btn-success" style="margin: 20px" href="/destinations/new" role="button">+ Add New</a>
+  <a class="btn btn-warning" style="margin: 20px" href="/destinations/users" role="button">Get Inspiration</a>
+</div>
+  <% end %>
+
+<div class="row">
+  <% @user.destinations.each do |e| %>
+    <% country = Country.find(e.country_id) %>
+      <div class="card" style="width: 15rem; margin: 20px">
+        <div class="text-center">
+          <div class="card-header"><a href='/destinations/<%= e.id %>'><%= e.description %></a></div>
+          <div class="card-body" style="padding: 10px"><%= country.name %></div>
+        </div>
+      </div>
+    <% end %>
+</div>

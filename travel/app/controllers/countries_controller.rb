@@ -1,43 +1,20 @@
 class CountriesController < ApplicationController
+  before '/countries/*' do
+    if !is_logged_in?
+      redirect "/users/login?error=you need to be logged in for that"
+    end
+  end
 
   get '/countries' do
-    if !logged_in?
-      @countries = Country.all
-      erb :"countries/index"
+    if !is_logged_in?
+      redirect "/users/login?error=you need to be logged in for that"
     end
+    @countries = Country.all.sort_by{|c| c.name}
+    erb :"countries/index"
   end
 
-  get "/countries/new" do
-    @error_message = params[:error]
-    erb :'countries/new'
-  end
-
-  get "/countries/:id/edit" do
-    @error_message = params[:error]
-    @country = Country.find(params[:id])
-    erb :'countries/edit'
-  end
-
-  post "/countries/:id" do
-    @country = Country.find(params[:id])
-    unless Country.valid_params?(params)
-      redirect "/countries/#{@country.id}/edit?error=invalid country"
-    end
-    @country.update(params.select{|k|k=="name" || k=="continent"})
-    redirect "/countries/#{@country.id}"
-  end
-
-  get "/countries/:id" do
-    @country = Country.find(params[:id])
-    erb :'countries/show'
-  end
-
-  post "/countries" do
-
-    unless Country.valid_params?(params)
-      redirect "/countries/new?error=invalid country"
-    end
-    Country.create(params)
-    redirect "/countries"
+  get '/countries/:id' do
+    @country = Country.find(params["id"])
+    erb :"countries/show"
   end
 end

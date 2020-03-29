@@ -1,57 +1,46 @@
 class UsersController < ApplicationController
-
-  get '/users/:id' do
-    @user = User.find_by_id(params[:id])
-    if logged_in? && @user == current_user
-      erb :'/users/show'
-    else
-      redirect to '/login'
-    end
-  end 
-
+  
   get '/signup' do
-    if !session[:user_id]
-      erb :'/users/signup'
-    else
+    redirect to '/destinations' if logged_in?
+    erb :"users/signup"
+  end
+
+  post '/signup' do
+    user_info = { :name => params["name"],
+                  :email => params["email"],
+                  :password => params["password"] }
+
+    if User.find_by(:email => user_info[:email])
+      redirect "/users/signup?error=this email address is already in our system"
+    end
+    new_user = User.create(user_info)
+    session[:user_id] = new_user.id
+    redirect to '/destinations'
+  end
+
+  get '/login' do
+    redirect to '/destinations' if logged_in?
+    erb :"users/login"
+  end
+
+  post '/login' do
+    user_info = {
+      :email => params["email"],
+      :password => params["password"]
+    }
+    user = User.find_by(:email => user_info[:email])
+    if user && user.authenticate(user_info[:password])
+      session[:user_id] = user.id
       redirect to '/destinations'
     end
   end
 
-  post '/signup' do 
-    if params[:username] == "" || params[:email] == "" || params[:password] == ""
-      redirect to '/signup'
+  get '/logout' do
+    if logged_in?
+      session.clear
+      redirect to '/login'
     else
-      @user = User.create(:username => params[:username], :email => params[:email], :password => params[:password])
-      session[:user_id] = @user.id
-      redirect "/users/#{@user.id}"
+      redirect to '/'
     end
-  end
-
-  get '/login' do 
-    @error_message = params[:error]
-    if !session[:user_id]
-      erb :'users/login'
-    else
-      redirect '/destinations'
-    end
-  end
-
-  post "/login" do
-      user = User.find_by(:email => params[:email])
-      if user && user.authenticate(params[:password])
-          session[:user_id] = user.id
-          redirect "/destinations"
-      else
-          redirect to '/signup'
-      end
-  end
-
-  get "/logout" do
-      if session[:user_id] != nil
-          session.destroy
-          redirect '/login' 
-      else
-          redirect to "/"
-      end
   end
 end

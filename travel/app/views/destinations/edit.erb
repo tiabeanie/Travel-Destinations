@@ -1,19 +1,14 @@
-  
-<h1>Edit <%= @destination.name %></h1>
-
-<form action="/destinations/<%=@destination.id %>" method="POST">
-  <label> Destination Name </label>
-  <input type="text" name="name" value="<%=@destination.name %>"> </br>
-
-  <label> Destination Description </label>
-  <input type="text" name="description" value="<%=@destination.description%>"> </br>
-
-  <label> Destination Country </label>
-  <select name="country_id">
-    <% current_user.countries.each do |country| %>
-      <option value=<%=country.id %> <%= "selected" if country.id==@destination.country.id %> ><%= country.name %></option>
-    <% end %>
-  </select>
-
-  <input type="submit" value="Update">
+<h1>Make Changes to <%= @destination.name %></h1>
+<form method="POST" action="/destinations/<%= @destination.id %>">
+  <input id="hidden" type="hidden" name="_method" value="patch">
+  <div class="form-group">
+    <label for="description">Description *</label>
+    <input type="text" class="form-control" id="description" name="description" value="<%= @destination.description %>" required>
+  </div>
+  <div class="form-group">
+    <label for="country">Country *</label><% country = Country.find(@destination.country_id) %>
+    <input type="text" class="form-control" id="contry" name="country" value="<%= country.name %>" required>
+  </div>
+    <br><br>
+    <button type="submit" class="btn btn-primary" style="margin-bottom: 20px">Save Your Changes</button>
 </form>
