@@ -2,13 +2,10 @@
 <br>
 <% if @user.destinations.empty? %>
   <div class="text-center"><p>You don't have anything in your Tracker!</p>
-  <p><a class="btn btn-success" style="margin: 20px" href="/destinations/new" role="button">Add a New Experience</a>
-  or
-  <a class="btn btn-warning" style="margin: 20px" href="/destinations/users" role="button">Get Inspiration from Others</a></p></div>
+  <p><a class="btn btn-success" style="margin: 20px" href="/destinations/new" role="button">Add a New Destination</a>
 <% else %>
 <div class="row">
   <a class="btn btn-success" style="margin: 20px" href="/destinations/new" role="button">+ Add New</a>
-  <a class="btn btn-warning" style="margin: 20px" href="/destinations/users" role="button">Get Inspiration</a>
 </div>
   <% end %>
 
